@@ -26,16 +26,16 @@ export class CoffeesService {
     this.coffees.push(createCoffeeDto);
     return createCoffeeDto;
   }
-  async update(updateCoffeeDto: any, id: string): Promise<Coffee> {
+  async update(updateCoffeeDto: any, id: string): Promise<void> {
     const { name, brand, flavour } = updateCoffeeDto;
     const exist = this.findOne(id);
     if (exist) {
       exist.name = await name;
       exist.brand = await brand;
       exist.flavour = await flavour;
-      return exist;
     }
   }
+
   remove(id: string): void {
     const coffeeIndex = this.coffees.findIndex((coffee) => coffee.id === +id);
     if (coffeeIndex >= 0) {
