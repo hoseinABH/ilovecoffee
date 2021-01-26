@@ -1,10 +1,11 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Coffee } from './entities/coffee.entity';
+import { Flavour } from './entities/flavour.entity';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
-import { Coffee } from './entities/coffee.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Flavour } from './entities/flavour.entity';
+import { PaginationQueryDto } from './../common/dto/pagination-query.dto';
 
 @Injectable()
 export class CoffeesService {
@@ -14,13 +15,14 @@ export class CoffeesService {
   ) {}
 
   // find all coffees
-  async findAll(): Promise<Coffee[]> {
-    return this.coffeeRepository.find();
+  async findAll(paginationQueryDto: PaginationQueryDto): Promise<Coffee[]> {
+    const { offset, limit } = paginationQueryDto;
+    return this.coffeeRepository.find({ relations: ['flavours'], skip: offset, take: limit });
   }
 
   // findOne Coffee
   async findOne(id: string): Promise<Coffee> {
-    const coffee = await this.coffeeRepository.findOne(id);
+    const coffee = await this.coffeeRepository.findOne(id, { relations: ['flavours'] });
     if (!coffee) {
       throw new NotFoundException(`Coffee with id #${id} not found!`);
     }
